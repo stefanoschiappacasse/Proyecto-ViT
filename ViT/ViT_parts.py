@@ -2,6 +2,7 @@ import torch
 from torch import nn, Tensor
 from einops import rearrange, reduce, repeat
 from einops.layers.torch import Rearrange, Reduce
+import torch.nn.functional as F
 
 
 class PatchEmbedding(nn.Module):
@@ -56,13 +57,9 @@ class MultiHeadAttention(nn.Module):
     def forward(self, x : Tensor, mask: Tensor = None) -> Tensor:
         qkv = rearrange(self.qkv(x), "b n (h d qkv) -> (qkv) b h n d", h=self.num_heads, qkv=3)
         queries, keys, values = qkv[0], qkv[1], qkv[2]
-        energy = torch.einsum('bhqd, bhkd -> bhqk', queries, keys) # batch, num_heads, query_len, key_len
-        if mask is not None:
-            fill_value = torch.finfo(torch.float32).min
-            energy.mask_fill(~mask, fill_value)
-            
+        sum_prod = torch.einsum('bhqd, bhkd -> bhqk', queries, keys) # batch, num_heads, query_len, key_len
         scaling = self.emb_size ** (1/2)
-        att = F.softmax(energy, dim=-1) / scaling
+        att = F.softmax(sum_prod, dim=-1) / scaling
         att = self.att_drop(att)
         out = torch.einsum('bhal, bhlv -> bhav ', att, values)
         out = rearrange(out, "b h n d -> b n (h d)")
