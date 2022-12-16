@@ -21,6 +21,9 @@ data/Images/
 otros
 */otros/*
 
+# checkpoints
+ViT/checkpoints/
+
 
 
 # Remove previous ipynb_checkpoints

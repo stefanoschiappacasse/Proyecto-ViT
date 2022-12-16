@@ -155,7 +155,7 @@ class TransformerEncoder(nn.Module):
         
     def forward(self, x):
         for i in range(len(self.transformerList)):
-        x = self.transformerList[i](x)
+            x = self.transformerList[i](x)
         return x
 
 

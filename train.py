@@ -1,4 +1,4 @@
-import wandb
+# import wandb
 import time
 import copy
 import torch
@@ -8,6 +8,8 @@ from torch import nn
 
 from ViT.ViT_model import ViT
 from ViT.ViT_parts import *
+from utils.preprocesamiento import redimensionamiento_imagenes
+from utils.data_loading import create_dataset, create_dataloaders
 
 
 class EarlyStopper:
@@ -182,8 +184,11 @@ def get_args():
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
     # parser.add_argument('--scale', '-s', type=float, default=0.5, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=0.2,
-                        help='Percent of the data that is used as validation (0-100)')
+                        help='Porcentaje de datos a usar para el conjunto de validación')
     parser.add_argument('--classes', '-c', type=int, default=6, help='Number of classes', dest = 'num_classes')
+    parser.add_argument('--rooth_path', '-rp', type=str, default='/PROYECTO-VIT/data/', help='Root path', dest = 'root_path')
+    parser.add_argument('--file_path', '-fp', type=str, default='/PROYECTO-VIT/data/yoga_train.txt', help='File path', 
+                        dest = 'file_path')
 
     return parser.parse_args()
 
@@ -195,7 +200,8 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
 
-
+    root_path = args.rooth_path
+    file_path = args.file_path
     model = ViT(n_classes=args.classes, emb_size = args.emb_size, num_heads = args.num_heads)
     
 
@@ -210,12 +216,24 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=args.load.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
+    redimensionamiento_imagenes(root_path)
+
+    # crear dataset      
+    train_dataset = create_dataset(root_path, file_path, True, True, 6)
+    # crear dataloaders de train y de test
+
+    # crear data loaders
+    train_loader, val_loader = create_dataloaders(train_dataset, val_dataset = None, set_ = 'train', 
+                                                 batch_size = args.batch_size, val_size =args.val)
+
     try:
         mynet, mynet_tl, mynet_ta, mynet_vl, mynet_va = \
-        train_model(model, 
-                    criterion, 
-                    optimizer, 
-                    scheduler,
+        train_model(model = model, 
+                    criterion = criterion, 
+                    optimizer = optimizer, 
+                    scheduler = scheduler,
+                    train_loader = train_loader,
+                    val_loader = val_loader,
                     num_epochs = 20)
 
     except:
