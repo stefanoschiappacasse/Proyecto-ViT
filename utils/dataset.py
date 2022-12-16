@@ -2,6 +2,7 @@ from PIL import Image
 import os
 import numpy as np
 from torchvision import datasets, models, transforms
+from torch.utils.data import Dataset
 
 
 class Yoga_82(Dataset):
@@ -30,9 +31,10 @@ class Yoga_82(Dataset):
         self.img_problemas = []
 
         if transform:
-            self.transform = transforms.Compose([transforms.RandomHorizontalFlip(0.5),
-                                      transforms.RandomRotation((-10,10)),
-                                      transforms.ToTensor()])
+            self.transform = transforms.Compose([transforms.Resize((224, 224)),
+                                                transforms.RandomHorizontalFlip(0.5),
+                                                transforms.RandomRotation((-10,10)),
+                                                transforms.ToTensor()])
 
 
         # creación de diccionarios de distintas clases.
