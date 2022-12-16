@@ -1,0 +1,6 @@
+standing,0
+sitting,1
+balancing,2
+inverted,3
+reclining,4
+wheel,5

@@ -1,0 +1,20 @@
+standing_straight,0
+standing_forward bend,1
+standing_side bend,2
+standing_others,3
+sitting_normal1,4
+sitting_normal2,5
+sitting_split,6
+sitting_forward bend,7
+sitting_twist,8
+balancing_front,9
+balancing_side,10
+inverted_legs straight up,11
+inverted_legs bend,12
+reclining_up-facing,13
+reclining_down-facing,14
+reclining_side-facing,15
+reclining_plank balance,16
+wheel_up-facing,17
+wheel_down-facing,18
+wheel_others,19

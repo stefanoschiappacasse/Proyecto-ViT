@@ -164,7 +164,8 @@ class ClassificationHead(nn.Sequential):
     del modelo.
 
     Args:
-        nn (_type_): _description_
+        emb_size (int): tamaño del patch embedding
+        n_classes (int): cantidad de clases a utilizar
     """
     def __init__(self, emb_size: int = 768, n_classes: int = 1000):
         super().__init__(
