@@ -2,14 +2,15 @@ from dataset import Yoga_82
 import torch
 
 
-def create_dataset(path, file_name, transformations, prueba, nivel):
+def create_dataset(path, file_name, transformations =  False, prueba = True, nivel = 6, n_samples = 1000):
 
 
     dataset = Yoga_82(root = path, 
                             file_ = file_name, 
                             transform = transformations, 
                             prueba = prueba, 
-                            nivel = nivel)
+                            nivel = nivel,
+                            n_samples = n_samples)
     return dataset
 
 

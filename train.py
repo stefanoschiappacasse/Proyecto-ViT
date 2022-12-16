@@ -139,6 +139,7 @@ def get_args():
     parser.add_argument('--rooth_path', '-rp', type=str, default='/PROYECTO-VIT/data/', help='Root path', dest = 'root_path')
     parser.add_argument('--file_path', '-fp', type=str, default='/PROYECTO-VIT/data/yoga_train.txt', help='File path', 
                         dest = 'file_path')
+    parser.add_argument('--prueba', '-pr', type=bool, default=True, help='Entrenamiento de prueba', dest = 'prueba')
 
     return parser.parse_args()
 
@@ -169,7 +170,7 @@ if __name__ == '__main__':
     redimensionamiento_imagenes(root_path)
 
     # crear dataset      
-    train_dataset = create_dataset(root_path, file_path, True, True, 6)
+    train_dataset = create_dataset(root_path, file_path, True, args.prueba, 6, 1000)
     # crear dataloaders de train y de test
 
     # crear data loaders
@@ -184,7 +185,7 @@ if __name__ == '__main__':
                     scheduler = scheduler,
                     train_loader = train_loader,
                     val_loader = val_loader,
-                    num_epochs = 20)
+                    num_epochs = args.epochs)
 
     except:
         pass
