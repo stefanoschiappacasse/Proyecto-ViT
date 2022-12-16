@@ -10,35 +10,8 @@ from ViT.ViT_model import ViT
 from ViT.ViT_parts import *
 from utils.preprocesamiento import redimensionamiento_imagenes
 from utils.data_loading import create_dataset, create_dataloaders
+from utils.early_stopping import EarlyStopper
 
-
-class EarlyStopper:
-  """
-  Clase que controla el sobre ajuste observando
-  cómo van variando las losses de validación 
-  con las épocas. Se define la cantidad de épocas a esperar
-  para parar luego de no haber mejoras (patience)
-  y el margen a considerar (min_delta).
-  """
-  def __init__(self, patience=1, min_delta=0):
-    self.patience = patience
-    self.min_delta = min_delta
-    self.counter = 0
-    self.min_validation_loss = np.inf
-
-  def early_stop(self, validation_loss):
-    if validation_loss < self.min_validation_loss:
-      self.min_validation_loss = validation_loss
-      self.counter = 0
-      return False
-    elif validation_loss >= (self.min_validation_loss + self.min_delta):
-      self.counter += 1
-      if self.counter >= self.patience:
-        return True
-      else:
-        return False
-    else:
-      return False
 
 
 
@@ -46,14 +19,6 @@ def train_model(model,
                 criterion, 
                 optimizer,
                 scheduler, 
-                # project_name,
-                # experiment_name,
-                # lr,
-                # weight_decay,
-                # arquitecture_name,
-                # dataset_name,
-                # batch_size,
-                # optim,
                 chkp_path,
                 device,
                 train_loader,
@@ -74,19 +39,6 @@ def train_model(model,
   train_acc = []
   val_loss = []
   train_loss = []
-
-#   wandb.init(
-#       project=project_name, 
-#       name=experiment_name, 
-#       config={
-#       "learning_rate": lr,
-#       "weight_decay":weight_decay,
-#       "architecture": arquitecture_name,
-#       "dataset": dataset_name,
-#       "epochs": num_epochs,
-#       "batch_size": batch_size,
-#       "optimizer": optim
-#       })
   
   early_stopper = EarlyStopper(patience=5)
 
@@ -125,7 +77,6 @@ def train_model(model,
     train_acc.append(epoch_acc)
     epoch_acc_train = epoch_acc
     
-    # wandb.log({"acc_train": epoch_acc, "loss_train": epoch_loss})
 
     #Validation 
     model.eval()
@@ -147,7 +98,6 @@ def train_model(model,
     epoch_loss = running_loss / len(val_loader.dataset)
     epoch_acc = running_corrects.double() / len(val_loader.dataset)
 
-    # wandb.log({"acc_val": epoch_acc, "loss_val": epoch_loss})
       
     print('Val Loss: {:.4f} Acc: {:.4f}'.format(epoch_loss, epoch_acc))
     val_loss.append(epoch_loss)
@@ -189,6 +139,7 @@ def get_args():
     parser.add_argument('--rooth_path', '-rp', type=str, default='/PROYECTO-VIT/data/', help='Root path', dest = 'root_path')
     parser.add_argument('--file_path', '-fp', type=str, default='/PROYECTO-VIT/data/yoga_train.txt', help='File path', 
                         dest = 'file_path')
+    parser.add_argument('--prueba', '-pr', type=bool, default=True, help='Entrenamiento de prueba', dest = 'prueba')
 
     return parser.parse_args()
 
@@ -219,7 +170,7 @@ if __name__ == '__main__':
     redimensionamiento_imagenes(root_path)
 
     # crear dataset      
-    train_dataset = create_dataset(root_path, file_path, True, True, 6)
+    train_dataset = create_dataset(root_path, file_path, True, args.prueba, 6, 1000)
     # crear dataloaders de train y de test
 
     # crear data loaders
@@ -234,7 +185,7 @@ if __name__ == '__main__':
                     scheduler = scheduler,
                     train_loader = train_loader,
                     val_loader = val_loader,
-                    num_epochs = 20)
+                    num_epochs = args.epochs)
 
     except:
         pass
