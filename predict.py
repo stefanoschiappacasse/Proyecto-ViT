@@ -1,12 +1,12 @@
 import torch
 
 
-def predicciones_modelo(model, device, test_loader):
+def predicciones_modelo(model, device, loader):
   model.eval()
   predicciones = []
   etiquetas = []
   
-  for images, labels in test_loader:
+  for images, labels in loader:
     inputs = images.to(device)
     labels = labels.to(device)
       
