@@ -1,4 +1,4 @@
-from dataset import Yoga_82
+from utils.dataset import Yoga_82
 import torch
 
 

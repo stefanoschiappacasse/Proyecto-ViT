@@ -1,6 +1,6 @@
 """ Unión de las distintas partes del modelo en una sola clase"""
 
-from .ViT_parts import *
+from ViT.ViT_parts import *
 
 class ViT(nn.Module):
   def __init__(self,     
