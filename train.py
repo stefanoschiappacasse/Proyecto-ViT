@@ -18,7 +18,6 @@ def train_model(model,
                 criterion, 
                 optimizer,
                 scheduler, 
-                chkp_path,
                 device,
                 train_loader,
                 val_loader,
@@ -109,8 +108,6 @@ def train_model(model,
 
     if early_stopper.early_stop(epoch_loss): 
         break
-    if (epoch + 1)%5 == 0:
-        torch.save(model.state_dict(), chkp_path + '_' + str((epoch + 1)) +'.pth')
         
   time_elapsed = time.time() - since
   print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed//60, 
