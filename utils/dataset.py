@@ -38,13 +38,13 @@ class Yoga_82(Dataset):
 
 
         # creación de diccionarios de distintas clases.
-        with open('/content/Yoga-82/classes_6.txt', 'r') as f:
+        with open(self.root + 'classes_6.txt', 'r') as f:
             self.classes_6 = {line.split(',')[0]: line.split(',')[1].replace('\n', '') for line in f}
 
-        with open('/content/Yoga-82/classes_20.txt', 'r') as f:
+        with open(self.root + 'classes_20.txt', 'r') as f:
             self.classes_20 = {line.split(',')[0]: line.split(',')[1].replace('\n', '') for line in f}
 
-        self.classes_82 = {clase: i-1 for i, clase in enumerate(sorted(os.listdir('/content/Yoga-82/Images/'))) if clase != '.DS_Store'}
+        self.classes_82 = {clase: i-1 for i, clase in enumerate(sorted(os.listdir(self.root + 'Images/'))) if clase != '.DS_Store'}
 
         
         # ruta del archivo
@@ -52,12 +52,14 @@ class Yoga_82(Dataset):
 
         # guardar imágenes y etiquetas como atributos de clase
         with open(path_file, 'r') as f:
+            print(path_file)
             for line in f:
                 img, label_6, label_20, label_82 = line.split(',')
                 try:
-                    image_path = os.path.join(self.root, 'Images', img)
+                    image_path = os.path.join(self.root, 'Images', img).replace("\\","/")
+                    # print(image_path)
                     img_ = Image.open(image_path)
-                    self.images.append(img)
+                    self.images.append(img_)
                     self.labels_6.append(int(label_6))
                     self.labels_20.append(int(label_20))
                     self.labels_82.append(int(label_82))
@@ -65,8 +67,11 @@ class Yoga_82(Dataset):
                 except:
                     self.img_problemas.append(img)
 
+                # break
+
 
         if self.prueba:
+            print(np.arange(0, len(self.images)))
             idx = np.random.choice(np.arange(0, len(self.images)),n_samples)
             self.images = np.array(self.images)[idx]
             self.labels_6 = np.array(self.labels_6)[idx]

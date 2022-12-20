@@ -8,7 +8,6 @@ from torch import nn
 
 from ViT.ViT_model import ViT
 from ViT.ViT_parts import *
-from utils.preprocesamiento import redimensionamiento_imagenes
 from utils.data_loading import create_dataset, create_dataloaders
 from utils.early_stopping import EarlyStopper
 
@@ -126,20 +125,20 @@ def train_model(model,
 def get_args():
     parser = argparse.ArgumentParser(description='Entrenamiento ViT con dataset Yoga-82')
     parser.add_argument('--epochs', '-e', metavar='E', type=int, default=5, help='Number of epochs')
-    parser.add_argument('--batch-size', '-b', metavar='B', dest='batch_size', type=int, default=32, help='Batch size')
+    parser.add_argument('--batch-size', '-b', metavar='B', dest='batch_size', type=int, default=64, help='Batch size')
     parser.add_argument('--num_heads', '-nh', metavar='NH', type=int, default=12, help='Number of heads')
-    parser.add_argument('--emb_size', '-nh', metavar='ES', type=int, default=768, help='Embedding size')
+    parser.add_argument('--emb_size', '-es', metavar='ES', type=int, default=768, help='Embedding size')
     parser.add_argument('--learning-rate', '-l', metavar='LR', type=float, default=1e-5,
                         help='Learning rate', dest='lr')
     parser.add_argument('--load', '-f', type=str, default=False, help='Load model from a .pth file')
-    # parser.add_argument('--scale', '-s', type=float, default=0.5, help='Downscaling factor of the images')
     parser.add_argument('--validation', '-v', dest='val', type=float, default=0.2,
                         help='Porcentaje de datos a usar para el conjunto de validación')
-    parser.add_argument('--classes', '-c', type=int, default=6, help='Number of classes', dest = 'num_classes')
-    parser.add_argument('--rooth_path', '-rp', type=str, default='/PROYECTO-VIT/data/', help='Root path', dest = 'root_path')
-    parser.add_argument('--file_path', '-fp', type=str, default='/PROYECTO-VIT/data/yoga_train.txt', help='File path', 
+    parser.add_argument('--num_classes', '-c', type=int, default=6, help='Number of classes', dest = 'num_classes')
+    parser.add_argument('--rooth_path', '-rp', type=str, default='data/', help='Root path', dest = 'root_path')
+    parser.add_argument('--file_path', '-fp', type=str, default='yoga_train.txt', help='File path', 
                         dest = 'file_path')
     parser.add_argument('--prueba', '-pr', type=bool, default=True, help='Entrenamiento de prueba', dest = 'prueba')
+    parser.add_argument('--n_samples', '-ns', type=int, default=2000, help='Cantidad de ejemplos', dest = 'n_samples')
 
     return parser.parse_args()
 
@@ -151,11 +150,10 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
 
-    root_path = args.rooth_path
+    root_path = args.root_path
     file_path = args.file_path
-    model = ViT(n_classes=args.classes, emb_size = args.emb_size, num_heads = args.num_heads)
+    model = ViT(n_classes=args.num_classes, emb_size = args.emb_size, num_heads = args.num_heads)
     
-
 
     if args.load:
         state_dict = torch.load(args.load, map_location=device)
@@ -164,18 +162,22 @@ if __name__ == '__main__':
 
     model.to(device=device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.load.lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-    redimensionamiento_imagenes(root_path)
-
+    
     # crear dataset      
-    train_dataset = create_dataset(root_path, file_path, True, args.prueba, 6, 1000)
+    train_dataset = create_dataset(path = root_path, 
+                                  file_name = file_path, 
+                                  transformations = True, 
+                                  prueba = args.prueba, 
+                                  nivel = args.num_classes, 
+                                  n_samples = args.n_samples)
     # crear dataloaders de train y de test
-
-    # crear data loaders
-    train_loader, val_loader = create_dataloaders(train_dataset, val_dataset = None, set_ = 'train', 
-                                                 batch_size = args.batch_size, val_size =args.val)
+    train_loader, val_loader = create_dataloaders(dataset = train_dataset, 
+                                                  set_ = 'train', 
+                                                  batch_size = args.batch_size, 
+                                                    val_size =args.val)
 
     try:
         mynet, mynet_tl, mynet_ta, mynet_vl, mynet_va = \

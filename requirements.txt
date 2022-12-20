@@ -3,5 +3,4 @@ numpy
 Pillow
 torch
 torchvision
-tqdm
-wandb
+einops
