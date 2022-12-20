@@ -52,13 +52,12 @@ class Yoga_82(Dataset):
 
         # guardar imágenes y etiquetas como atributos de clase
         with open(path_file, 'r') as f:
-            print(path_file)
             for line in f:
                 img, label_6, label_20, label_82 = line.split(',')
                 try:
                     image_path = os.path.join(self.root, 'Images', img).replace("\\","/")
                     img_ = Image.open(image_path)
-                    self.images.append(img_)
+                    self.images.append(img)
                     self.labels_6.append(int(label_6))
                     self.labels_20.append(int(label_20))
                     self.labels_82.append(int(label_82))
