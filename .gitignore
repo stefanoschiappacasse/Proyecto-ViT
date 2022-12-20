@@ -24,6 +24,11 @@ otros
 # checkpoints
 ViT/checkpoints/
 
+#pychache
+
+ViT/__pychache__
+utils/__pycache__
+
 
 
 # Remove previous ipynb_checkpoints
