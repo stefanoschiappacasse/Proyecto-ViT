@@ -3,7 +3,19 @@ import torch
 
 
 def create_dataset(path, file_name, transformations =  False, prueba = True, nivel = 6, n_samples = 1000):
+    """Método que genera los objetos de tipo Dataset Yoga-82
 
+    Args:
+        path (str): ruta del proyecto
+        file_name (str): ruta del archivo que contiene la información de las imágenes
+        transformations (bool, opcional): Si se le debe realizar transformaciones al dataset.
+        prueba (bool, opcional): indica si es un dataset de prueba o no.
+        nivel (int, opcional): indica la jerarquía de clases.
+        n_samples (int, opcional): indica la cantidad de muestras a usar en el caso que sea de prueba.
+
+    Returns:
+        _type_: _description_
+    """
 
     dataset = Yoga_82(root = path, 
                             file_ = file_name, 

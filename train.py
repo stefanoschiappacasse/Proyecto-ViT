@@ -120,6 +120,9 @@ def train_model(model,
 
 
 def get_args():
+    """Función que se encarga de recibir todos los parámetros necesarios para el entrenamiento.
+
+    """
     parser = argparse.ArgumentParser(description='Entrenamiento ViT con dataset Yoga-82')
     parser.add_argument('--epochs', '-e', metavar='E', type=int, default=5, help='Number of epochs')
     parser.add_argument('--batch-size', '-b', metavar='B', dest='batch_size', type=int, default=64, help='Batch size')

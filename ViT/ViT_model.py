@@ -3,6 +3,8 @@
 from ViT.ViT_parts import *
 
 class ViT(nn.Module):
+  """Clase que ensambla los distintos componentes del modelo ViT.
+  """
   def __init__(self,     
               in_channels: int = 3,
               patch_size: int = 16,
